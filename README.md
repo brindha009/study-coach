@@ -221,6 +221,12 @@ npm start
 - **Database Queries**: Optimized with Prisma
 - **Mobile Performance**: 90+ Lighthouse score
 
+## 👨‍💻 Author
+
+**brindha009**
+- Email: brindhacs07@gmail.com
+- GitHub: [@brindha009](https://github.com/brindha009)
+
 ## 🤝 Contributing
 
 This project was built for Panda Hacks 2025. For questions or improvements:
@@ -236,6 +242,6 @@ MIT License - feel free to use this project for educational purposes!
 
 ---
 
-**Built with ❤️ for Panda Hacks 2025**
+**Built with ❤️ for Panda Hacks 2025 by brindha009**
 
 *Empowering the next generation of learners through intelligent technology.*

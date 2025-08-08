@@ -2,6 +2,10 @@
   "name": "study-coach",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "brindha009",
+    "email": "brindhacs07@gmail.com"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
