@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Study materials
+  materials     StudyMaterial[]
+  
+  // Study plans
+  studyPlans    StudyPlan[]
+  
+  // Quizzes
+  quizzes       Quiz[]
+  quizAttempts  QuizAttempt[]
+  
+  // Progress tracking
+  progress      Progress[]
+  
+  // Calendar events
+  calendarEvents CalendarEvent[]
+}
+
+model StudyMaterial {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   // The actual text content
+  type        String   // "notes", "textbook", "article", etc.
+  subject     String
+  uploadedAt  DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // AI-generated metadata
+  summary     String?
+  keyTopics   String?  // JSON string for SQLite compatibility
+  difficulty  String?  // "beginner", "intermediate", "advanced"
+  
+  // Vector embeddings for AI search
+  embedding   String?  // JSON string for SQLite compatibility
+  
+  // Related quizzes and study plans
+  quizzes     Quiz[]
+  studyPlans  StudyPlan[]
+  
+  @@index([userId])
+  @@index([subject])
+}
+
+model StudyPlan {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  duration    Int      // Duration in days
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Plan details
+  tasks       StudyTask[]
+  materials   StudyMaterial[]
+  
+  // Progress tracking
+  isActive    Boolean  @default(true)
+  completedAt DateTime?
+  
+  @@index([userId])
+}
+
+model StudyTask {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  completed   Boolean  @default(false)
+  order       Int      // For ordering tasks in the plan
+  studyPlanId String
+  studyPlan   StudyPlan @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+  
+  @@index([studyPlanId])
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  subject     String
+  difficulty  String   // "easy", "medium", "hard"
+  createdAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Questions
+  questions   QuizQuestion[]
+  
+  // Quiz attempts
+  attempts    QuizAttempt[]
+  
+  // Related materials
+  materials   StudyMaterial[]
+  
+  @@index([userId])
+  @@index([subject])
+}
+
+model QuizQuestion {
+  id          String   @id @default(cuid())
+  question    String
+  correctAnswer String
+  options     String   // JSON string for SQLite compatibility
+  explanation String?
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@index([quizId])
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score       Int      // Percentage score
+  answers     String   // JSON string for SQLite compatibility
+  completedAt DateTime @default(now())
+  
+  @@index([quizId])
+  @@index([userId])
+}
+
+model Progress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject     String
+  score       Int      // Overall score for the subject
+  lastStudied DateTime @default(now())
+  
+  @@unique([userId, subject])
+  @@index([userId])
+}
+
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  location    String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Google Calendar integration
+  googleEventId String?
+  
+  @@index([userId])
+  @@index([startTime])
+}
