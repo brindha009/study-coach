@@ -224,7 +224,7 @@ npm start
 ## 👨‍💻 Author
 
 **brindha009**
-- Email: brindhacs07@gmail.com
+- Email: brindhacs54@gmail.com
 - GitHub: [@brindha009](https://github.com/brindha009)
 
 ## 🤝 Contributing
